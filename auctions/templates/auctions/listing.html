@@ -1,0 +1,51 @@
+{% extends "auctions/layout.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+  
+<div class="p-4 text-center">
+    <h4>Listing: {{ listing.listing_title }} </h4>
+
+    {% if listing.image %}
+        <img src="{{listing.image.url}}" style="width: 70%; height: 70%;" alt="{{listing.image}}">
+    {% endif %}
+
+    <h5> Current Price: {{listing.current_bid }}$</h5>
+        <div>Posted by: {{listing.listed_by}} at {{listing.date_posted}}.</div>
+        <div>Description: {{listing.description }}.</div>
+
+        <div>
+            {% if user.is_authenticated %}
+
+            <form action="{% url 'listing' listing.id%}" method="post">
+                {% csrf_token %}
+                {{ create_bid | crispy}}
+                <button class="btn btn-primary" type="submit">Bid</button>    
+            </form>
+            {% endif %}
+        </div>
+
+</div>
+
+    {% for comment in comments %}
+        <h3>{{ comment.commented_by_whom }} at {{ comment.date_posted }}</h3>
+
+        Comment: {{ comment.comment }}
+        
+        <h1>____________________________________</h1>
+    {% endfor %}
+
+
+
+    {% if user.is_authenticated %}
+        <h1> Create a Comment! </h1>
+
+        <form action="{% url 'listing' listing.id%}" method="post">
+            {% csrf_token %}
+            {{ comment_form }}
+            <input class="btn btn-primary" type="submit">    
+        </form>
+       {% endif %}
+
+
+{% endblock %}
